@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SWIFT CALL MANAGER HUB™</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+/* Root CSS Variables for seamless light/dark switching */
+:root {
+--bg-main: #f3f4f6;
+--bg-card: #ffffff;
+--bg-header: #ffffff;
+--bg-sidebar: #e5e7eb;
+--bg-input: #fafafa;
+--bg-input-focus: #ffffff;
+--text-main: #111827;
+--text-muted: #6b7280;
+--border-color: #d1d5db;
+--card-shadow: rgba(0,0,0,0.05);
+--dynamic-highlight: #2563eb; 
+}
+
+[data-theme="dark"] {
+--bg-main: #111827;
+--bg-card: #1f2937;
+--bg-header: #1f2937;
+--bg-sidebar: #111827;
+--bg-input: #374151;
+--bg-input-focus: #1f2937;
+--text-main: #f9fafb;
+--text-muted: #9ca3af;
+--border-color: #4b5563;
+--card-shadow: rgba(0,0,0,0.3);
+--dynamic-highlight: #60a5fa; 
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Inter',sans-serif;
+background: var(--bg-main);
+color: var(--text-main);
+transition: background 0.3s, color 0.3s;
+}
+
+header{
+background: var(--bg-header);
+padding:25px;
+border-bottom:1px solid var(--border-color);
+position:sticky;
+top:0;
+z-index:1000;
+transition: background 0.3s, border-color 0.3s;
+}
+
+header h1{
+font-size:34px;
+font-weight:800;
+}
+
+header p{
+margin-top:8px;
+color: var(--text-muted);
+}
+
+.global-bar{
+background: var(--bg-header);
+padding:20px;
+border-bottom:1px solid var(--border-color);
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+gap:15px;
+transition: background 0.3s, border-color 0.3s;
+}
+
+.container{
+display:flex;
+min-height:100vh;
+}
+
+.sidebar{
+width:290px;
+background: var(--bg-sidebar);
+padding:25px;
+border-right:1px solid var(--border-color);
+display: flex;
+flex-direction: column;
+gap: 24px;
+transition: background 0.3s, border-color 0.3s;
+}
+
+.sidebar h2{
+margin-bottom:15px;
+font-size:20px;
+font-weight: 800;
+}
+
+.sidebar-header-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 15px;
+}
+
+.sidebar-header-row h2 {
+margin-bottom: 0;
+}
+
+.theme-toggle-btn {
+background: #2563eb;
+color: #ffffff;
+border: none;
+padding: 8px 12px;
+border-radius: 8px;
+font-weight: 700;
+font-size: 11px;
+text-transform: uppercase;
+cursor: pointer;
+transition: 0.2s;
+}
+
+.theme-toggle-btn:hover {
+background: #1d4ed8;
+}
+
+.sidebar-section-title {
+font-size: 11px;
+font-weight: 800;
+color: #2563eb;
+text-transform: uppercase;
+letter-spacing: 1px;
+margin-bottom: 10px;
+border-bottom: 1px dashed var(--border-color);
+padding-bottom: 4px;
+}
+
+.tab-btn{
+width:100%;
+padding:18px;
+margin-bottom:14px;
+border:none;
+border-radius:14px;
+background: var(--bg-card);
+color: var(--text-main);
+cursor:pointer;
+font-weight:700;
+text-align:left;
+transition:.3s;
+border:1px solid var(--border-color);
+}
+
+.tab-btn:hover{
+background:#dbeafe;
+color: #111827;
+}
+
+.tab-btn.active{
+background:#2563eb;
+color:white;
+border-color: #2563eb;
+}
+
+.link-stack {
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+
+.link-btn {
+display: block;
+text-decoration: none;
+background: var(--bg-card);
+color: var(--text-main);
+border: 1px solid var(--border-color);
+padding: 12px;
+border-radius: 8px;
+font-size: 13px;
+font-weight: 700;
+transition: 0.2s;
+}
+
+.link-btn:hover {
+background: #dbeafe;
+border-color: #2563eb;
+color: #111827;
+}
+
+.scratchpad-area {
+width: 100%;
+min-height: 80px;
+background: var(--bg-card);
+border: 1px solid var(--border-color);
+border-radius: 8px;
+padding: 10px;
+color: var(--text-main);
+font-size: 13px;
+resize: none;
+outline: none;
+}
+
+.dispo-btn {
+width: 100%;
+background: #2563eb;
+color: #ffffff;
+border: none;
+padding: 12px;
+border-radius: 8px;
+font-weight: 800;
+font-size: 12px;
+text-transform: uppercase;
+cursor: pointer;
+margin-top: 6px;
+letter-spacing: 0.5px;
+transition: 0.2s;
+}
+
+.dispo-btn:hover {
+background: #1d4ed8;
+}
+
+.social-footer {
+display: grid;
+grid-template-columns: 1fr;
+gap: 8px;
+}
+
+.social-btn {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+text-decoration: none;
+padding: 10px;
+font-size: 11px;
+font-weight: 800;
+text-transform: uppercase;
+border-radius: 6px;
+color: white;
+}
+.fb-btn { background: #1877F2; }
+
+.content{
+flex:1;
+padding:35px;
+}
+
+.tab-content{
+display:none;
+}
+
+.tab-content.active{
+display:block;
+}
+
+.card{
+background: var(--bg-card);
+padding:35px;
+border-radius:22px;
+margin-bottom:30px;
+border:1px solid var(--border-color);
+box-shadow:0 5px 20px var(--card-shadow);
+transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.card h2{
+font-size:30px;
+margin-bottom:25px;
+}
+
+.section-title{
+margin-top:40px;
+margin-bottom:20px;
+font-size:22px;
+font-weight:800;
+color:#2563eb;
+}
+
+.question-block{
+margin-bottom:20px;
+}
+
+.question{
+font-weight:700;
+font-size:16px;
+margin-bottom:6px;
+line-height:1.6;
+}
+
+.grid-2 {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 15px;
+margin-top: 8px;
+}
+
+.grid-3 {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+gap: 12px;
+margin-top: 8px;
+}
+
+.dynamic-business,
+.dynamic-agent {
+color: var(--dynamic-highlight);
+font-weight: 700;
+transition: color 0.3s;
+}
+
+.psych-tracker {
+display: flex;
+justify-content: space-between;
+background: var(--bg-main);
+padding: 12px;
+border-radius: 12px;
+margin-bottom: 25px;
+border: 1px dashed var(--border-color);
+gap: 8px;
+}
+
+.tracker-step {
+flex: 1;
+text-align: center;
+font-size: 11px;
+font-weight: 800;
+color: var(--text-muted);
+padding: 8px;
+border-radius: 6px;
+transition: 0.3s;
+text-transform: uppercase;
+}
+
+.tracker-step.active-step {
+background: #2563eb;
+color: #ffffff;
+box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+}
+
+textarea,
+input,
+select{
+width:100%;
+padding:8px 12px;
+border-radius:8px;
+border:1px solid var(--border-color);
+background: var(--bg-input);
+color: var(--text-main);
+font-size:14px;
+margin-top:4px;
+outline: none;
+transition: background 0.3s, border-color 0.3s, color 0.3s;
+}
+
+textarea:focus,
+input:focus,
+select:focus {
+border-color: #2563eb;
+background: var(--bg-input-focus);
+}
+
+textarea{
+min-height:45px;
+resize:vertical;
+}
+
+.global-bar input {
+padding: 10px 14px;
+border-radius: 10px;
+margin-top: 4px;
+}
+
+.rebuttal{
+margin-top:8px;
+background: var(--bg-main);
+padding:12px;
+border-left:5px solid #2563eb;
+border-radius:8px;
+line-height:1.6;
+font-size:14px;
+color: var(--text-main);
+transition: background 0.3s;
+}
+
+.closing-script-block {
+background: var(--bg-main);
+padding: 20px;
+border-radius: 12px;
+margin-top: 30px;
+margin-bottom: 30px;
+border-left: 5px solid #10b981;
+line-height: 1.8;
+}
+
+.closing-script-block p {
+margin-bottom: 12px;
+font-size: 15px;
+}
+
+.closing-script-block p:last-child {
+margin-bottom: 0;
+}
+
+.lead-status-wrap{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+margin-top:15px;
+}
+
+.lead-option{
+padding:14px 18px;
+border-radius:12px;
+font-weight:700;
+cursor:pointer;
+border:2px solid transparent;
+transition:.3s;
+display: flex;
+align-items: center;
+}
+
+.lead-option input{
+margin-right:8px;
+margin-top: 0;
+width: auto;
+padding: 0;
+}
+
+.hot-option{
+background:#fee2e2;
+color:#991b1b;
+}
+
+.warm-option{
+background:#fef3c7;
+color:#92400e;
+}
+
+.cold-option{
+background:#dbeafe;
+color:#1e3a8a;
+}
+
+.lead-option.active{
+border:2px solid var(--text-main);
+transform:scale(1.03);
+}
+
+.checklist-box {
+background: var(--bg-main);
+padding: 20px;
+border-radius: 12px;
+margin-top: 20px;
+border: 1px solid var(--border-color);
+}
+
+.checklist-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 10px;
+margin-top: 15px;
+}
+
+.check-item {
+display: flex;
+align-items: center;
+font-size: 13px;
+font-weight: 600;
+}
+
+.check-item input {
+width: auto;
+margin-top: 0;
+margin-right: 8px;
+cursor: pointer;
+}
+
+.rules-box {
+background: #eff6ff;
+border-left: 5px solid #2563eb;
+padding: 20px;
+border-radius: 12px;
+margin-top: 25px;
+color: #1e3a8a;
+}
+[data-theme="dark"] .rules-box {
+background: #1e293b;
+border-left-color: #3b82f6;
+color: #bfdbfe;
+}
+
+.rules-box ul {
+margin-left: 20px;
+margin-top: 10px;
+line-height: 1.7;
+}
+
+.button-row{
+display:flex;
+gap:15px;
+margin-top:35px;
+flex-wrap:wrap;
+}
+
+.btn{
+padding:16px 24px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+font-weight:700;
+transition:.3s;
+}
+
+.save-btn{
+background:#2563eb;
+color:white;
+}
+
+.pdf-btn{
+background:#111827;
+color:white;
+border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .pdf-btn {
+background: #374151;
+color: white;
+}
+
+.btn:hover{
+transform:translateY(-2px);
+}
+
+@media(max-width: 992px) {
+.container { flex-direction: column; }
+.sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border-color); }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>SWIFT CALL MANAGER HUB™</h1>
+<p>B2B Outbound • Logistics Management • Lead Triage & Qualification</p>
+</header>
+
+<div class="global-bar">
+<div>
+<label><strong>Moving Company Name</strong></label>
+<input type="text" id="globalBusinessName" placeholder="Moving Company Name">
+</div>
+
+<div>
+<label><strong>Your Name</strong></label>
+<input type="text" id="globalAgentName" placeholder="Agent Name">
+</div>
+
+<div>
+<label><strong>Phone Number</strong></label>
+<input type="text" id="globalPhoneNumber" placeholder="(555) 555-5555">
+</div>
+</div>
+
+<div class="container">
+
+<div class="sidebar">
+<div>
+<div class="sidebar-header-row">
+<h2>Campaigns</h2>
+<button class="theme-toggle-btn" id="themeToggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+</div>
+<button class="tab-btn active" onclick="openTab(event,'tab1')" style="border-color: #10b981; font-weight: 800; margin-bottom: 10px;">🚚 Moving Logistics Campaign</button>
+<button class="tab-btn" onclick="openTab(event,'tab2')" style="border-color: #3b82f6; font-weight: 800;">📋 Customer Intake</button>
+</div>
+
+<div>
+<div class="sidebar-section-title">Useful Links</div>
+<div class="link-stack">
+<a href="https://swiftie83.github.io/Swift-EOD-Report/" target="_blank" class="link-btn" style="color: #2563eb; font-weight: 800;">🚀 Operational EOD Report ↗</a>
+</div>
+</div>
+
+<div>
+<div class="sidebar-section-title">Campaign Scratchpad</div>
+<textarea class="scratchpad-area" id="dispoScratchpad" placeholder="Drop custom account terms, follow-up dates, or callback instructions here..."></textarea>
+<button class="dispo-btn" onclick="copyScratchpadNote()">Copy Notes</button>
+</div>
+
+<div>
+<div class="sidebar-section-title">Community Broadcasts</div>
+<div class="social-footer">
+<a href="https://facebook.com/share/g/1AfaCVgUmP" target="_blank" class="social-btn fb-btn">Facebook Group</a>
+</div>
+</div>
+</div>
+
+<div class="content">
+
+<!-- TAB 1: MOVING LOGISTICS COLD CALLING SCRIPT -->
+<div id="tab1" class="tab-content active">
+<div class="card">
+<h2>🚚 COLD CALLING SCRIPT FOR MOVING COMPANIES</h2>
+
+<div class="psych-tracker">
+<div class="tracker-step active-step" id="t1-step-gate">1. Intake & Introduction</div>
+<div class="tracker-step" id="t1-step-qual">2. Discovery</div>
+<div class="tracker-step" id="t1-step-close">3. Close Set</div>
+</div>
+
+<div class="section-title">PHASE 1: THE INTAKE & INTRODUCTION</div>
+<div class="question-block">
+<div class="question">Prospect: "Hello?"</div>
+<div class="question">You: "Hello, am I speaking with the owner of <span class="dynamic-business">{Business Name}</span>?"</div>
+<div class="question">Owner: "Yes, this is the owner."</div>
+<div class="question">You: "My name is <span class="dynamic-agent">{{Your Name}}</span> with Swift mover Acquisition Group. How are you today?"</div>
+<div class="question" style="font-weight: normal; font-style: italic; color: #6b7280; margin-top: 4px; margin-bottom: 8px;">(Pause for response)</div>
+<div class="question" style="color:#2563eb;">You: "I am calling because we help local moving companies get more jobs. Are you available to take on more jobs right now, or is your schedule completely full?"</div>
+<textarea data-label="Phase 1 Intake Interaction" onfocus="activateStep('t1', 't1-step-gate')"></textarea>
+</div>
+
+<div class="section-title">PHASE 2: QUALIFYING & ROADMAP ROUTING</div>
+<div class="question-block">
+<div class="question">Route A: Account admits "Yes, we definitely need more jobs / we have openings"</div>
+<div class="rebuttal" style="border-left-color:#10b981;">
+"That is exactly why we reached out. What we do is simple: We answer your inquiries in your company name, follow up with missed calls instantly, qualify the leads, and drop booked estimates right into your calendar. That way, you just focus on moving. Would you be open to a quick 10-minute chat later this week to see how we handle it?"
+</div>
+<textarea data-label="Moving Route A Evaluation" onfocus="activateStep('t1', 't1-step-qual')" placeholder="Log business operational bottlenecks here..."></textarea>
+</div>
+
+<div class="question-block">
+<div class="question">Route B: Account states "We're busy enough / schedule is full"</div>
+<div class="rebuttal" style="border-left-color:#d97706;">
+"That’s a great problem to have, honestly. Out of curiosity, when your crews get completely slammed, does handling every single incoming inquiry fall entirely on you, or do you have a dedicated system just for immediate follow-ups? Even busy companies lose revenue because a hot lead calls, hits voicemail, and immediately dials the next mover on Google. Would it make sense to take a look at how we prevent that, just to keep us in your back pocket?"
+</div>
+<textarea data-label="Moving Route B Evaluation" onfocus="activateStep('t1', 't1-step-qual')"></textarea>
+</div>
+
+<div class="section-title">PHASE 3: VALUE FRAMEWORK & THE CLOSE</div>
+<div class="question-block">
+<div class="question">You: "Just to be clear—we aren't a marketing agency trying to sell you expensive ads. We just help you lock down and convert the leads you are already getting. I don't want to eat up your time while you're working. Would Tuesday or Wednesday work better for a quick 10-minute Zoom to see how the system works?"</div>
+<textarea data-label="Moving Meeting Schedule Value Target" onfocus="activateStep('t1', 't1-step-close')"></textarea>
+</div>
+
+<div class="section-title">LIVE OBJECTION SYSTEM WORKBENCH</div>
+<div class="question-block">
+<div class="question">Objection Check: "How much does it cost?"</div>
+<div class="rebuttal"><strong>Response Structure:</strong> "Our plans start right around $300 a month, but it really depends on your fleet size and how many calls you guys bring in. I’d rather take 5 minutes to see how you operate first so I can give you an exact, fair number. Does mid-week work for a quick chat?"</div>
+</div>
+
+<div class="question-block">
+<div class="question">Objection Check: "Just send me some information."</div>
+<div class="rebuttal"><strong>Response Structure:</strong> "I can absolutely do that. What’s the best email to send it to? <i>(Get email)</i> Perfect, I'll send over a quick 1-page breakdown today. So it doesn't get lost in your inbox, would it be crazy if I gave you a quick ring on Thursday morning just to see what you thought of it?"</div>
+</div>
+
+<div class="closing-script-block" style="border-left-color: #10b981;">
+<p><strong>The Clean Close Execution:</strong></p>
+<p>"I appreciate your time today. Go crush those operational targets, and I'll look forward to speaking with you soon! Have a great day!"</p>
+</div>
+
+<div class="section-title">LEAD CLASSIFICATION</div>
+<div class="lead-status-wrap">
+<label class="lead-option hot-option">
+<input type="radio" name="leadStatus" value="HOT LEAD"> 🔥 HOT PROSPECT
+</label>
+<label class="lead-option warm-option">
+<input type="radio" name="leadStatus" value="WARM LEAD"> 🟠 WARM PROSPECT
+</label>
+<label class="lead-option cold-option">
+<input type="radio" name="leadStatus" value="COLD LEAD"> 🔵 COLD PROSPECT
+</label>
+</div>
+
+<div class="button-row">
+<button class="btn save-btn" onclick="alert('Lead Workspace Locally Saved!')">Save Lead</button>
+<button class="btn pdf-btn" onclick="downloadPDF()">Download PDF</button>
+</div>
+</div>
+</div>
+
+<!-- TAB 2: INTAKE SCRIPT -->
+<div id="tab2" class="tab-content">
+<div class="card">
+<h2>Swift Appointment Setting Services</h2>
+<p style="color: var(--text-muted); margin-bottom: 20px; font-weight: 600;">Moving Customer Intake Script</p>
+
+<div class="closing-script-block" style="border-left-color: #2563eb; background: var(--bg-main);">
+<strong>Objective:</strong> Represent the moving company professionally • Make the customer feel comfortable • Gather all the information needed for an accurate estimate • Schedule an estimate • Leave the customer with a great first impression.
+</div>
+
+<div class="section-title">GREETING</div>
+<div class="question-block">
+<div class="question">You: "Thank you for calling <span class="dynamic-business">{Moving Company Name}</span>. My name is <span class="dynamic-agent">{{Agent Name}}</span>. How may I help you today?"</div>
+<div class="rebuttal">
+<strong>If the Customer Says: "I need a moving quote."</strong><br>
+"Absolutely! I'd be happy to help you with that. I just need to ask you a few quick questions so we can prepare the most accurate estimate possible."
+</div>
+</div>
+
+<div class="section-title">CUSTOMER INFORMATION</div>
+<div class="grid-2">
+<div>
+<label>First Name</label>
+<input type="text" data-label="First Name" placeholder="First Name">
+</div>
+<div>
+<label>Last Name</label>
+<input type="text" data-label="Last Name" placeholder="Last Name">
+</div>
+</div>
+<div class="grid-2" style="margin-top: 10px;">
+<div>
+<label>Best Phone Number</label>
+<input type="text" data-label="Best Phone" placeholder="(555) 555-5555">
+</div>
+<div>
+<label>Email Address</label>
+<input type="email" data-label="Email" placeholder="name@example.com">
+</div>
+</div>
+
+<div class="section-title">MOVE INFORMATION</div>
+<div class="question-block">
+<div class="question">"Are you moving from a house, apartment, condo, or office?"</div>
+<select data-label="Property Type">
+<option value="">-- Select Type --</option>
+<option value="House">House</option>
+<option value="Apartment">Apartment</option>
+<option value="Condo">Condo</option>
+<option value="Office">Office</option>
+</select>
+</div>
+
+<div class="grid-3">
+<div>
+<label>Current Address / City</label>
+<input type="text" data-label="Pickup Address" placeholder="Address & City">
+</div>
+<div>
+<label>State</label>
+<input type="text" data-label="Pickup State" placeholder="MI">
+</div>
+<div>
+<label>ZIP Code</label>
+<input type="text" data-label="Pickup ZIP" placeholder="ZIP">
+</div>
+</div>
+
+<div class="grid-3" style="margin-top: 10px;">
+<div>
+<label>Destination Address / City</label>
+<input type="text" data-label="Destination Address" placeholder="Address & City">
+</div>
+<div>
+<label>State</label>
+<input type="text" data-label="Destination State" placeholder="MI">
+</div>
+<div>
+<label>ZIP Code</label>
+<input type="text" data-label="Destination ZIP" placeholder="ZIP">
+</div>
+</div>
+
+<div class="section-title">MOVE DATE & TYPE</div>
+<div class="grid-2">
+<div>
+<div class="question">"What date are you planning to move?"</div>
+<input type="text" data-label="Planned Move Date" placeholder="e.g., October 12th (or timeframe)">
+</div>
+<div>
+<div class="question">Type of Move</div>
+<select data-label="Type of Move">
+<option value="">-- Select Type --</option>
+<option value="Local Move">Local Move</option>
+<option value="Long Distance">Long Distance</option>
+<option value="Commercial Move">Commercial Move</option>
+<option value="Storage Move">Storage Move</option>
+<option value="Packing Only">Packing Only</option>
+<option value="Loading Only">Loading Only</option>
+<option value="Unloading Only">Unloading Only</option>
+</select>
+</div>
+</div>
+
+<div class="section-title">HOME SIZE & FLOORS</div>
+<div class="grid-3">
+<div>
+<label>How many bedrooms?</label>
+<select data-label="Bedrooms Count">
+<option value="">-- Bedrooms --</option>
+<option value="Studio">Studio</option>
+<option value="1 Bedroom">1 Bedroom</option>
+<option value="2 Bedroom">2 Bedroom</option>
+<option value="3 Bedroom">3 Bedroom</option>
+<option value="4 Bedroom">4 Bedroom</option>
+<option value="5+ Bedroom">5+ Bedroom</option>
+</select>
+</div>
+<div>
+<label>Pickup Floors / Access</label>
+<input type="text" data-label="Pickup Access (Stairs/Elevator)" placeholder="# of floors, Stairs, Elevator?">
+</div>
+<div>
+<label>Destination Access</label>
+<input type="text" data-label="Destination Access (Stairs/Elevator)" placeholder="House/Apt, Stairs, Elevator?">
+</div>
+</div>
+
+<div class="section-title">INVENTORY, PACKING & SUPPLIES</div>
+<div class="question-block">
+<div class="question">"Do you have any large or specialty items?" <span style="font-size:12px; font-weight:normal; color:var(--text-muted);">(Piano, Safe, Pool Table, Gun Safe, Hot Tub, Appliances, Exercise Eq., Artwork, Aquarium, etc.)</span></div>
+<textarea data-label="Large/Specialty Items" placeholder="List items here..."></textarea>
+</div>
+
+<div class="grid-2">
+<div>
+<div class="question">"Would you like packing services?"</div>
+<select data-label="Packing Services">
+<option value="No">No</option>
+<option value="Yes">Yes</option>
+<option value="Partial Packing">Partial Packing</option>
+</select>
+</div>
+<div>
+<div class="question">Packing Supplies Needed?</div>
+<input type="text" data-label="Supplies Needed" placeholder="Boxes, paper, tape, blankets, wardrobe boxes?">
+</div>
+</div>
+
+<div class="grid-2" style="margin-top: 15px;">
+<div>
+<div class="question">"Will you need temporary storage?"</div>
+<select data-label="Storage Needs">
+<option value="No">No</option>
+<option value="Yes">Yes</option>
+</select>
+</div>
+<div>
+<div class="question">"May I ask how you heard about us?"</div>
+<select data-label="Referral Source">
+<option value="">-- Select Source --</option>
+<option value="Google">Google</option>
+<option value="Facebook">Facebook</option>
+<option value="Referral">Referral</option>
+<option value="Repeat Customer">Repeat Customer</option>
+<option value="Website">Website</option>
+<option value="Other">Other</option>
+</select>
+</div>
+</div>
+
+<div class="question-block" style="margin-top: 15px;">
+<div class="question">Special Requests / Fragile items / Notes:</div>
+<textarea data-label="Special Requests/Notes" placeholder="Anything else the movers should know..."></textarea>
+</div>
+
+<div class="section-title">APPOINTMENT SCHEDULING & CONFIRMATION</div>
+<div class="question-block">
+<div class="question">"Thank you! The next step is scheduling your estimate. Our available times are [Option 1, Option 2, Option 3]. Which works best for you?"</div>
+<div class="question" style="margin-top: 12px;">"Perfect! I have you scheduled for:"</div>
+<div class="grid-3">
+<div>
+<label>Scheduled Date & Time</label>
+<input type="text" data-label="Estimate Date/Time" placeholder="Date & Time">
+</div>
+<div>
+<label>Type of Estimate</label>
+<select data-label="Estimate Type">
+<option value="Phone">Phone</option>
+<option value="Virtual">Virtual</option>
+<option value="In-Person">In-Person</option>
+</select>
+</div>
+</div>
+<p style="margin-top: 10px; font-style: italic; font-size: 14px; color: var(--text-muted);">"You'll receive a confirmation shortly."</p>
+</div>
+
+<div class="closing-script-block" style="border-left-color: #10b981;">
+<p><strong>Ending & Closing:</strong></p>
+<p>"Is there anything else I can help you with today? (If I don't know the answer, I'll make sure someone from our team follows up with you.)"</p>
+<p>"Thank you for choosing <strong class="dynamic-business">{Moving Company Name}</strong>. We truly appreciate the opportunity to earn your business. We look forward to helping make your move as smooth and stress-free as possible. Have a wonderful day!"</p>
+</div>
+
+<div class="checklist-box">
+<h3>✅ Customer Information Checklist</h3>
+<div class="checklist-grid">
+<label class="check-item"><input type="checkbox"> Name</label>
+<label class="check-item"><input type="checkbox"> Phone</label>
+<label class="check-item"><input type="checkbox"> Email</label>
+<label class="check-item"><input type="checkbox"> Pickup Address</label>
+<label class="check-item"><input type="checkbox"> Destination Address</label>
+<label class="check-item"><input type="checkbox"> Move Date</label>
+<label class="check-item"><input type="checkbox"> Bedrooms</label>
+<label class="check-item"><input type="checkbox"> Floors</label>
+<label class="check-item"><input type="checkbox"> Elevator</label>
+<label class="check-item"><input type="checkbox"> Stairs</label>
+<label class="check-item"><input type="checkbox"> Large Items</label>
+<label class="check-item"><input type="checkbox"> Packing Needed</label>
+<label class="check-item"><input type="checkbox"> Storage Needed</label>
+<label class="check-item"><input type="checkbox"> Special Requests</label>
+<label class="check-item"><input type="checkbox"> Referral Source</label>
+<label class="check-item"><input type="checkbox"> Estimate Scheduled</label>
+</div>
+</div>
+
+<div class="rules-box">
+<h3>✓ Customer Service Rules</h3>
+<ul>
+<li>Smile while speaking.</li>
+<li>Speak clearly and slowly.</li>
+<li>Never interrupt the customer.</li>
+<li>Use the customer's name throughout the conversation.</li>
+<li>Be patient. Show empathy if the customer seems stressed.</li>
+<li>Never guess. If you don't know, let them know a team member will follow up.</li>
+<li>Double-check the spelling of names, emails, and addresses before hanging up.</li>
+</ul>
+</div>
+
+<div class="button-row">
+<button class="btn save-btn" onclick="alert('Intake Data Workspace Locally Saved!')">Save Workspace</button>
+<button class="btn pdf-btn" onclick="downloadPDF()">Download PDF</button>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+
+<script>
+function toggleTheme() {
+    const htmlEl = document.documentElement;
+    const currentTheme = htmlEl.getAttribute('data-theme');
+    const toggleBtn = document.getElementById('themeToggle');
+    
+    if (currentTheme === 'dark') {
+        htmlEl.removeAttribute('data-theme');
+        toggleBtn.innerText = "🌙 Dark Mode";
+    } else {
+        htmlEl.setAttribute('data-theme', 'dark');
+        toggleBtn.innerText = "☀️ Light Mode";
+    }
+}
+
+function activateStep(tabPrefix, stepId) {
+    document.querySelectorAll(`#${tabPrefix} .tracker-step`).forEach(step => {
+        step.classList.remove('active-step');
+    });
+    const target = document.getElementById(stepId);
+    if(target) target.classList.add('active-step');
+}
+
+const businessInput = document.getElementById('globalBusinessName');
+const agentInput = document.getElementById('globalAgentName');
+
+function updateDynamicNames() {
+    const businessName = businessInput.value.trim() || "{Moving Company Name}";
+    const agentName = agentInput.value.trim() || "{{Agent Name}}";
+    
+    document.querySelectorAll('.dynamic-business').forEach(el => {
+        el.innerText = businessName;
+    });
+    
+    document.querySelectorAll('.dynamic-agent').forEach(el => {
+        el.innerText = agentName;
+    });
+}
+
+if (businessInput) businessInput.addEventListener('input', updateDynamicNames);
+if (agentInput) agentInput.addEventListener('input', updateDynamicNames);
+
+function openTab(evt, tabName){
+    let tabcontent = document.getElementsByClassName("tab-content");
+    for(let i=0;i<tabcontent.length;i++){
+        tabcontent[i].style.display="none";
+        tabcontent[i].classList.remove("active");
+    }
+    let tabbuttons = document.getElementsByClassName("tab-btn");
+    for(let i=0;i<tabbuttons.length;i++){
+        tabbuttons[i].classList.remove("active");
+    }
+    const currentTab = document.getElementById(tabName);
+    currentTab.style.display="block";
+    currentTab.classList.add("active");
+    evt.currentTarget.classList.add("active");
+}
+
+const leadOptions = document.querySelectorAll('.lead-option');
+leadOptions.forEach(option => {
+    option.addEventListener('click', () => {
+        leadOptions.forEach(o => o.classList.remove('active'));
+        option.classList.add('active');
+        const radio = option.querySelector('input[type="radio"]');
+        if(radio) radio.checked = true;
+    });
+});
+
+function copyScratchpadNote() {
+    const pad = document.getElementById("dispoScratchpad");
+    pad.select();
+    pad.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(pad.value);
+    alert("Campaign notes copied to clipboard!");
+}
+
+async function downloadPDF(){
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    let y = 20;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.text("SWIFT CALL MANAGER HUB™", 10, y);
+    y += 15;
+
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+
+    const business = businessInput.value || "(Not Provided)";
+    const agent = agentInput.value || "N/A";
+    const phone = document.getElementById("globalPhoneNumber").value || "N/A";
+
+    doc.text("Moving Company: " + business, 10, y); y += 8;
+    doc.text("Agent / Setter Name: " + agent, 10, y); y += 8;
+    doc.text("Phone Number: " + phone, 10, y); y += 14;
+
+    doc.setLineWidth(0.5);
+    doc.line(10, y, 200, y);
+    y += 12;
+
+    const activeTab = document.querySelector(".tab-content.active");
+    if(activeTab) {
+        const titleText = activeTab.querySelector("h2").innerText;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text(titleText, 10, y);
+        y += 10;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+
+        const operationalFields = activeTab.querySelectorAll('textarea, select, input[type="text"], input[type="email"]');
+        operationalFields.forEach(field => {
+            // Skip the global header items to prevent double listing
+            if (field.id === "globalBusinessName" || field.id === "globalAgentName" || field.id === "globalPhoneNumber") return;
+            
+            let val = field.value;
+            let descriptiveLabel = field.getAttribute("data-label") || field.placeholder || "Input Field";
+
+            if(val && val.trim() !== "") {
+                let textLine = descriptiveLabel + ": " + val.trim();
+                let splitLines = doc.splitTextToSize(textLine, 180);
+
+                doc.text(splitLines, 10, y);
+                y += splitLines.length * 7 + 2;
+
+                if(y > 270){
+                    doc.addPage();
+                    y = 20;
+                }
+            }
+        });
+    }
+
+    const selectedLead = document.querySelector('input[name="leadStatus"]:checked');
+    if(selectedLead && activeTab.id === "tab1"){
+        y += 8;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("PROSPECT STATUS: " + selectedLead.value, 10, y);
+    }
+
+    doc.save("Swift-Moving-Call-Log.pdf");
+}
+</script>
+</body>
+</html>
